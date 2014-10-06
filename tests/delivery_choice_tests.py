@@ -223,3 +223,21 @@ class TestEvent(AuspostTestCase):
             self.assertEquals(event.timestamp, dt)
             self.assertEquals(event.location, loc)
             self.assertEquals(event.signer_name, sign)
+
+
+class TestAddressValidation(AuspostTestCase):
+    fixtures = ['valid_address', 'invalid_address']
+
+    def test_invalid_address_json_parsing(self):
+        validation_result = ValidationResult.from_json(self.invalid_address)
+        self.assertFalse(validation_result.is_valid)
+        self.assertFalse(validation_result.has_address)
+
+    def test_valid_address_json_parsing(self):
+        validation_result = ValidationResult.from_json(self.valid_address)
+        self.assertTrue(validation_result.is_valid)
+        self.assertTrue(validation_result.has_address)
+        self.assertEquals(
+            validation_result.address.addressLine1,
+            '109/175 Sturt St'.upper()
+        )
